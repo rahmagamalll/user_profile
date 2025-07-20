@@ -1,9 +1,11 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:user_profile/core/widgets/top_app_bar.dart';
 import 'package:user_profile/features/profile/ui/widgets/personal_info_form.dart';
 
 // ignore: must_be_immutable
+@RoutePage()
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -35,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             key: _formKey,
             child: Column(
               children: [
-                TopAppBar(title: 'Profile'),
+                TopAppBar(title: 'Profile', backarrow: true),
                 Expanded(
                   child: CustomScrollView(
                     slivers: [
@@ -45,7 +47,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [PersonalInfoForm()],
                         ),
                       ),
-                     
                     ],
                   ),
                 ),
