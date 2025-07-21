@@ -28,35 +28,33 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  auto_route: ^10.1.0+1
+  cupertino_icons: ^1.0.8
+  equatable: ^2.0.7
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.0
   flutter_screenutil: ^5.9.3
-  shared_preferences: ^2.5.3
   image_picker: ^1.1.2
-  auto_route: ^10.1.0+1
-  
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  rive: ^0.13.20
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  auto_route_generator: ^10.2.3 
-  lean_builder: ^0.1.0-alpha.13
+  auto_route_generator: ^10.2.3
+  build_runner: ^2.5.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+  lean_builder: ^0.1.0-alpha.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -68,14 +66,12 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    # - images/a_dot_ham.jpeg
+    - assets/animation/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
