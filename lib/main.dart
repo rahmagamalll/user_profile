@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:user_profile/core/routing/new_routing.dart';
 
-void main() {
-  runApp( ProfileApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(ProfileApp());
 }
 
 class ProfileApp extends StatelessWidget {
