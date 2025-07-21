@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rive/rive.dart';
 import 'package:user_profile/core/helper/spacing.dart';
 import 'package:user_profile/core/theming/styles.dart';
 import 'package:user_profile/core/widgets/custom_elevation_button.dart';
 import 'package:user_profile/core/widgets/custom_snack_bar.dart';
 import 'package:user_profile/core/widgets/custom_text_form_field.dart';
+import 'package:user_profile/features/profile/data/enum/bunny_animation_enum.dart';
 import 'package:user_profile/features/profile/logic/cubit/personal_info_cubit.dart';
 import 'package:user_profile/features/profile/logic/cubit/personal_info_state.dart';
-import 'package:user_profile/features/profile/ui/widgets/user_image.dart';
 
 class PersonalInfoForm extends StatefulWidget {
   const PersonalInfoForm({super.key});
@@ -27,10 +29,81 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
 
   String? imagePathFromGallery;
 
+  Artboard? riveartboard;
+  late RiveAnimationController controllerIdel;
+  late RiveAnimationController controllerSuccess;
+  late RiveAnimationController controllerFail;
+  late RiveAnimationController controllerEyeCover;
+  late RiveAnimationController controllerIntro;
+  late RiveAnimationController controllerIdleLookAround;
+
+  final phoneText = FocusNode();
+
   @override
   void initState() {
     super.initState();
     context.read<PersonalInfoCubit>().loadUserData();
+
+    controllerIdel = SimpleAnimation(BunnyAnimation.idle.name);
+    controllerSuccess = SimpleAnimation(BunnyAnimation.success.name);
+    controllerFail = SimpleAnimation(BunnyAnimation.fail.name);
+    controllerEyeCover = SimpleAnimation(BunnyAnimation.eye_cover.name);
+    controllerIntro = SimpleAnimation(BunnyAnimation.Intro.name);
+    controllerIdleLookAround = SimpleAnimation(
+      BunnyAnimation.idle_look_around.name,
+    );
+
+    phoneText.addListener(() {
+      if (phoneText.hasFocus) {
+        eyeCoverAnimation();
+      } else if (!phoneText.hasFocus) {
+        idelAnimation();
+      }
+    });
+
+    rootBundle.load('assets/animation/bunny_login.riv').then((data) async {
+      final file = RiveFile.import(data);
+
+      final artboard = file.mainArtboard;
+      artboard.addController(controllerIdleLookAround);
+
+      setState(() {
+        riveartboard = artboard;
+      });
+    });
+  }
+
+  void removeControllers() {
+    riveartboard?.removeController(controllerIdel);
+    riveartboard?.removeController(controllerSuccess);
+    riveartboard?.removeController(controllerFail);
+    riveartboard?.removeController(controllerEyeCover);
+    riveartboard?.removeController(controllerIntro);
+  }
+
+  void idelAnimation() {
+    removeControllers();
+    riveartboard?.addController(controllerIdel);
+  }
+
+  void successAnimation() {
+    removeControllers();
+    riveartboard?.addController(controllerSuccess);
+  }
+
+  void failAnimation() {
+    removeControllers();
+    riveartboard?.addController(controllerFail);
+  }
+
+  void eyeCoverAnimation() {
+    removeControllers();
+    riveartboard?.addController(controllerEyeCover);
+  }
+
+  void introAnimation() {
+    removeControllers();
+    riveartboard?.addController(controllerIntro);
   }
 
   @override
@@ -45,8 +118,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<PersonalInfoCubit, PersonalInfoState>(
-      listenWhen: (prev, curr) =>
-          curr.isSuccess || curr.error != null,
+      listenWhen: (prev, curr) => curr.isSuccess || curr.error != null,
       listener: (context, state) {
         if (state.isSuccess) {
           CustomSnackBar.show(context, 'Saved Successfully');
@@ -57,10 +129,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
       },
       child: BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
         builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
           firstNameController.text = state.firstName ?? '';
           lastNameController.text = state.lastName ?? '';
           emailController.text = state.email ?? '';
@@ -72,17 +140,26 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                verticalSpacing(20),
-                UserImage(
-                  onChangedPhoto: (value) {
-                    imagePathFromGallery = value;
-                  },
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 4,
+                  child:
+                      riveartboard != null
+                          ? Rive(artboard: riveartboard!)
+                          : const SizedBox.shrink(),
                 ),
+                //   verticalSpacing(20),
+                //  UserImage(
+                //      onChangedPhoto: (value) {
+                //       imagePathFromGallery = value;
+                //     },
+                //   ),
                 verticalSpacing(20),
 
                 /// First Name
-                Text('First name',
-                    style: TextStylesManager.font18Bold(context)),
+                Text(
+                  'First name',
+                  style: TextStylesManager.font18Bold(context),
+                ),
                 verticalSpacing(10),
                 CustomTextFormField(
                   controller: firstNameController,
@@ -93,6 +170,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                     }
                     final RegExp nameRegex = RegExp(r'^[a-zA-Z]+$');
                     if (!nameRegex.hasMatch(value.trim())) {
+                      failAnimation();
                       return 'Only letters are allowed';
                     }
                     return null;
@@ -108,8 +186,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                 verticalSpacing(15),
 
                 /// Last Name
-                Text('Last name',
-                    style: TextStylesManager.font18Bold(context)),
+                Text('Last name', style: TextStylesManager.font18Bold(context)),
                 verticalSpacing(10),
                 CustomTextFormField(
                   controller: lastNameController,
@@ -120,6 +197,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                     }
                     final RegExp nameRegex = RegExp(r'^[a-zA-Z]+$');
                     if (!nameRegex.hasMatch(value.trim())) {
+                      failAnimation();
                       return 'Only letters are allowed';
                     }
                     return null;
@@ -144,9 +222,11 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter your email';
                     }
-                    final RegExp emailRegex =
-                        RegExp(r'^[\w]+@([\w-]+\.)+[\w-]{3}$');
+                    final RegExp emailRegex = RegExp(
+                      r'^[\w]+@([\w-]+\.)+[\w-]{3}$',
+                    );
                     if (!emailRegex.hasMatch(value.trim())) {
+                      failAnimation();
                       return 'Enter a valid email';
                     }
                     return null;
@@ -162,19 +242,23 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                 verticalSpacing(15),
 
                 /// Phone
-                Text('Phone Number',
-                    style: TextStylesManager.font18Bold(context)),
+                Text(
+                  'Phone Number',
+                  style: TextStylesManager.font18Bold(context),
+                ),
                 verticalSpacing(10),
                 CustomTextFormField(
+                  focusNode: phoneText,
+                  obscureText: true,
                   controller: phoneController,
                   readOnly: state.isReadOnly,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter your phone number';
                     }
-                    final RegExp phoneRegex =
-                        RegExp(r'^01[0125][0-9]{8}$');
+                    final RegExp phoneRegex = RegExp(r'^01[0125][0-9]{8}$');
                     if (!phoneRegex.hasMatch(value.trim())) {
+                      failAnimation();
                       return 'Enter a valid Egyptian phone number';
                     }
                     return null;
@@ -196,20 +280,20 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                       child: CustomElevationButton(
                         onPressed: () {
                           if (state.isReadOnly) {
-                            context
-                                .read<PersonalInfoCubit>()
-                                .toggleEditMode();
+                            context.read<PersonalInfoCubit>().toggleEditMode();
                           } else {
                             if (_formKey.currentState!.validate()) {
                               context.read<PersonalInfoCubit>().saveUserData(
-                                    firstName:
-                                        firstNameController.text.trim(),
-                                    lastName:
-                                        lastNameController.text.trim(),
-                                    email: emailController.text.trim(),
-                                    phone: phoneController.text.trim(),
-                                    imagePath: imagePathFromGallery,
-                                  );
+                                firstName: firstNameController.text.trim(),
+                                lastName: lastNameController.text.trim(),
+                                email: emailController.text.trim(),
+                                phone: phoneController.text.trim(),
+                                imagePath: imagePathFromGallery,
+                              );
+                              successAnimation();
+                              Future.delayed(const Duration(seconds: 2), () {
+                                idelAnimation();
+                              });
                             }
                           }
                         },
