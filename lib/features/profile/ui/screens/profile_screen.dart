@@ -18,12 +18,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String? firstname;
-
-  String? lastname;
-
-  String? imagePathFromGallery;
-
   @override
   void initState() {
     super.initState();

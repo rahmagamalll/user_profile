@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(title: const TopAppBar(title: 'Home',backarrow: false,)),
       body: Column(
         children: [
-          verticalSpacing(50),
+          verticalSpacing(100),
           Center(
             child: Text(
               'Welcome to the Home Screen!',

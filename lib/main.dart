@@ -8,7 +8,7 @@ Future<void> main() async {
 }
 
 class ProfileApp extends StatelessWidget {
-   ProfileApp({super.key});
+  ProfileApp({super.key});
   final _appRouter = AppRouter();
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class ProfileApp extends StatelessWidget {
         return MaterialApp.router(
           routerConfig: _appRouter.config(),
           debugShowCheckedModeBanner: false,
+          darkTheme: ThemeData(brightness: Brightness.dark),
           theme: ThemeData(brightness: Brightness.light),
-       
         );
       },
     );

@@ -53,14 +53,12 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
       BunnyAnimation.idle_look_around.name,
     );
 
-    phoneText.addListener(() {
-      if (phoneText.hasFocus) {
-        eyeCoverAnimation();
-      } else if (!phoneText.hasFocus) {
-        idelAnimation();
-      }
-    });
+    phoneTextListener();
 
+    bunnyAnimationRive();
+  }
+
+  void bunnyAnimationRive() {
     rootBundle.load('assets/animation/bunny_login.riv').then((data) async {
       final file = RiveFile.import(data);
 
@@ -70,6 +68,16 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
       setState(() {
         riveartboard = artboard;
       });
+    });
+  }
+
+  void phoneTextListener() {
+    phoneText.addListener(() {
+      if (phoneText.hasFocus) {
+        eyeCoverAnimation();
+      } else if (!phoneText.hasFocus) {
+        idelAnimation();
+      }
     });
   }
 
@@ -112,6 +120,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
     lastNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
+    phoneText.dispose();
     super.dispose();
   }
 
@@ -147,15 +156,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                           ? Rive(artboard: riveartboard!)
                           : const SizedBox.shrink(),
                 ),
-                //   verticalSpacing(20),
-                //  UserImage(
-                //      onChangedPhoto: (value) {
-                //       imagePathFromGallery = value;
-                //     },
-                //   ),
                 verticalSpacing(20),
-
-                /// First Name
                 Text(
                   'First name',
                   style: TextStylesManager.font18Bold(context),
@@ -184,8 +185,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                   hintStyle: TextStylesManager.font16Medium(context),
                 ),
                 verticalSpacing(15),
-
-                /// Last Name
                 Text('Last name', style: TextStylesManager.font18Bold(context)),
                 verticalSpacing(10),
                 CustomTextFormField(
@@ -211,37 +210,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                   hintStyle: TextStylesManager.font16Medium(context),
                 ),
                 verticalSpacing(15),
-
-                /// Email
-                Text('Email', style: TextStylesManager.font18Bold(context)),
-                verticalSpacing(10),
-                CustomTextFormField(
-                  controller: emailController,
-                  readOnly: state.isReadOnly,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    final RegExp emailRegex = RegExp(
-                      r'^[\w]+@([\w-]+\.)+[\w-]{3}$',
-                    );
-                    if (!emailRegex.hasMatch(value.trim())) {
-                      failAnimation();
-                      return 'Enter a valid email';
-                    }
-                    return null;
-                  },
-                  hintText: 'email',
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 13.h,
-                  ),
-                  borderRadius: BorderRadius.circular(8.r),
-                  hintStyle: TextStylesManager.font16Medium(context),
-                ),
-                verticalSpacing(15),
-
-                /// Phone
                 Text(
                   'Phone Number',
                   style: TextStylesManager.font18Bold(context),
@@ -271,8 +239,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                   borderRadius: BorderRadius.circular(8.r),
                   hintStyle: TextStylesManager.font16Medium(context),
                 ),
-                verticalSpacing(40),
-
+                verticalSpacing(130),
                 /// Save / Edit Button
                 Row(
                   children: [
@@ -281,6 +248,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                         onPressed: () {
                           if (state.isReadOnly) {
                             context.read<PersonalInfoCubit>().toggleEditMode();
+                            idelAnimation();
                           } else {
                             if (_formKey.currentState!.validate()) {
                               context.read<PersonalInfoCubit>().saveUserData(
@@ -292,7 +260,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                               );
                               successAnimation();
                               Future.delayed(const Duration(seconds: 2), () {
-                                idelAnimation();
+                                introAnimation();
                               });
                             }
                           }
