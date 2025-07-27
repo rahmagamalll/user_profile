@@ -37,8 +37,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
   late RiveAnimationController controllerIntro;
   late RiveAnimationController controllerIdleLookAround;
 
-  final phoneText = FocusNode();
-
   @override
   void initState() {
     super.initState();
@@ -53,8 +51,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
       BunnyAnimation.idle_look_around.name,
     );
 
-    phoneTextListener();
-
     bunnyAnimationRive();
   }
 
@@ -68,16 +64,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
       setState(() {
         riveartboard = artboard;
       });
-    });
-  }
-
-  void phoneTextListener() {
-    phoneText.addListener(() {
-      if (phoneText.hasFocus) {
-        eyeCoverAnimation();
-      } else if (!phoneText.hasFocus) {
-        idelAnimation();
-      }
     });
   }
 
@@ -120,7 +106,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
     lastNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
-    phoneText.dispose();
     super.dispose();
   }
 
@@ -216,8 +201,6 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                 ),
                 verticalSpacing(10),
                 CustomTextFormField(
-                  focusNode: phoneText,
-                  obscureText: true,
                   controller: phoneController,
                   readOnly: state.isReadOnly,
                   validator: (value) {
@@ -240,6 +223,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                   hintStyle: TextStylesManager.font16Medium(context),
                 ),
                 verticalSpacing(130),
+
                 /// Save / Edit Button
                 Row(
                   children: [
